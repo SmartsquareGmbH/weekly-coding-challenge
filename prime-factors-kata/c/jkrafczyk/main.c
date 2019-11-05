@@ -106,10 +106,11 @@ void *handle_request(void *client_fd_as_voidp) {
     //This is going to be a happy response. 
     //Need to read full request, otherwise clients report errors :(
     int last_read_was_nl = req_buffer[nread-1] == '\n';
-    char nl_find_buffer = 0;
-    //This can be done faster! (avoid unnecessary syscalls, use maximally large read()s.)
-    while (1) {
-        int more_bytes = read(client_fd, &nl_find_buffer, 1);
+    char nl_find_buffer[1024];
+    int done = 0;
+
+    while (!done) {
+        int more_bytes = read(client_fd, nl_find_buffer, sizeof(nl_find_buffer));
         if (more_bytes == -1 && errno == ECONNRESET) {
             //Client is not listening any more.
             return 0;
@@ -117,13 +118,19 @@ void *handle_request(void *client_fd_as_voidp) {
         if (more_bytes <= 0) {
             break;
         }
-        if(nl_find_buffer == '\n' && last_read_was_nl) {
-            break;
-        }
-        if (nl_find_buffer != '\r') {
-            last_read_was_nl = nl_find_buffer == '\n';
+        for (int i=0; i<more_bytes; i++) {
+            char c = nl_find_buffer[i];
+            if(c == '\n' && last_read_was_nl) {
+                done = 1;
+                break;
+            }
+            if (c != '\r') {
+                last_read_was_nl = c == '\n';
+            }
         }
     }
+    
+
 
     sized_factors_t factors;
     int n_factors = factor(req_n, factors);
@@ -140,6 +147,7 @@ void *handle_request(void *client_fd_as_voidp) {
     *(buffer_cur++) = ']';
 
     return respond_200(client_fd, (buffer_cur-output_buffer), output_buffer);
+    
 }
 
 static int socket_fd;
