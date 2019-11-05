@@ -1,0 +1,4 @@
+*.o
+factor
+factor_test
+*.log
