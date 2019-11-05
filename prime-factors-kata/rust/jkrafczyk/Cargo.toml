@@ -1,0 +1,8 @@
+[package]
+name = "factoring"
+version = "0.1.0"
+authors = ["Jens Krafczyk <21033189+jkrafczyk-sq@users.noreply.github.com>"]
+
+[dependencies]
+tokio = "0.1"
+hyper = "0.12"
