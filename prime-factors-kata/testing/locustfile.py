@@ -7,7 +7,7 @@ class StressTest(TaskSet):
         self.n = str(random.choice([4211, 4513, 5323, 5807, 6247, 6247, 9923]))
 
     @task
-    def fetch_prime_faktor(self):
+    def fetch_random_prime_factor(self):
         self.client.get("/generate/" + self.n)
 
 class Instructor(HttpLocust):
