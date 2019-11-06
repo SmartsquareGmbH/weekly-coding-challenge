@@ -52,7 +52,7 @@ fn factor_service(req: Request<Body>) -> Response<Body> {
             p2 = p*p;
         }
     }
-    if n != 1 || first {
+    if n != 1 {
         if !first {
             result.push_str(",");
         }
