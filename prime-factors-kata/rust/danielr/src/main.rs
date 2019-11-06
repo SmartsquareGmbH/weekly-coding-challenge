@@ -30,7 +30,7 @@ fn api(req: Request<Body>) -> Response<Body> {
 }
 
 fn main() {
-    let addr = ([127, 0, 0, 1], 8080).into();
+    let addr = ([0, 0, 0, 0], 8080).into();
 
     let server = Server::bind(&addr)
 	.serve(|| service_fn_ok(api))
