@@ -5,5 +5,5 @@ Dieser Ordner enhält das Locustfile und das dazugehörige Dockerfile um die Abg
 ### Ausführung
 ```bash
 docker build . -t locust-coding-challenge
-docker run locust-coding-challenge
+docker run --netword host locust-coding-challenge
 ```
