@@ -1,4 +1,7 @@
 *.o
 factor
 factor_test
+factor_bench
 *.log
+*.csv
+*.ipynb*
