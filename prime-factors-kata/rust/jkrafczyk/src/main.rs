@@ -6,6 +6,36 @@ use hyper::service::service_fn_ok;
 const PATH_PREFIX: &str = "/generate/";
 const ERROR_RESPONSE: &str = "\"ERROR\"";
 
+fn factor(mut n: u32) -> Vec<u32> {
+    let mut result = Vec::new();
+    if n < 2 {
+        return result;
+    }
+    result.reserve(32);
+
+    while (n != 0) && (n % 2 == 0) {
+        n /= 2;
+        result.push(2);
+    }
+
+    let mut p = 3;
+    let mut p2 = 9;
+    while p2 <= n {
+        if n % p == 0 {
+            result.push(p);
+            n /= p;
+        } else {
+            p += 2;
+            p2 = p*p;
+        }
+    }
+    if n > 1 {
+        result.push(n);
+    }
+
+    return result;
+}
+
 fn factor_service(req: Request<Body>) -> Response<Body> {
     let mut res = Response::new(Body::from(ERROR_RESPONSE));
     *res.status_mut() = StatusCode::NOT_FOUND;
@@ -31,47 +61,17 @@ fn factor_service(req: Request<Body>) -> Response<Body> {
         return res;
     }
 
-    let mut n: u32 = arg_parsed.unwrap();
-
-    let mut first = true;
-    let mut result = "[".to_string();
-    let mut p = 2;
-    let mut p2 = 4;
-
-    while p2 <= n {
-        if n % p == 0 {
-            if first {
-                first = false;
-            } else {
-                result.push_str(",");
-            }
-            result.push_str(&p.to_string());
-            n /= p;
-        } else {
-            p += 1;
-            p2 = p*p;
-        }
-    }
-    if n != 1 {
-        if !first {
-            result.push_str(",");
-        }
-        result.push_str(&n.to_string());
-    }
-    result.push_str("]");
+    let n: u32 = arg_parsed.unwrap();
+    let result = format!("{:?}", factor(n));
     *res.body_mut() = Body::from(result);
     *res.status_mut() = StatusCode::OK;
     return res;
 }
 
 fn main() {
-    // This is our socket address...
     let addr = ([0, 0, 0, 0], 8080).into();
 
-    // A `Service` is needed for every connection, so this
-    // creates one from our `hello_world` function.
     let new_svc = || {
-        // service_fn_ok converts our function into a `Service`
         service_fn_ok(factor_service)
     };
 
@@ -79,6 +79,6 @@ fn main() {
         .serve(new_svc)
         .map_err(|e| eprintln!("server error: {}", e));
 
-    // Run this server for... forever!
+    println!("Listening on {:?}", addr);
     hyper::rt::run(server);
 }
