@@ -1,6 +1,6 @@
 # Lasttests
 
-Dieser Ordner enhält das Locustfile und das dazugehörige Dockerfile um die Abgaben zu testen zu die Metriken zu vergleichen.
+Dieser Ordner enhält das Locustfile und das dazugehörige Dockerfile um die Abgaben zu testen und die Metriken zu vergleichen.
 
 ### Ausführung
 ```bash
