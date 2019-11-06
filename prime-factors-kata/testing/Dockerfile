@@ -5,10 +5,11 @@ RUN pip install locustio pyzmq && \
 
 WORKDIR /locust
 
-ADD locustfile.py locustfile.py
 ADD requirements.txt requirements.txt
 
 RUN pip install -r requirements.txt
+
+ADD locustfile.py locustfile.py
 
 EXPOSE 8089 5557 5558
 ENTRYPOINT [ "locust", "--host=http://host.docker.internal:8080"]
