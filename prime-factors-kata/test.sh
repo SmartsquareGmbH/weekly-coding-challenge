@@ -83,7 +83,7 @@ assert_factors() {
 }
 
 #Check correct factoring with a hand full of carefully crafted examples
-assert_factors 1 1
+assert_factors 1 
 assert_factors 2 2
 assert_factors 3 3 
 assert_factors 4 2 2
