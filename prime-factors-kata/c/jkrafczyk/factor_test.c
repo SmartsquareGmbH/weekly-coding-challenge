@@ -60,7 +60,7 @@ void verify_factors(factor_int_t n, int expected_num_factors, ...) {
 }
 
 int main(int argc, char *argv[]) {
-    verify_factors(1, 1, 1);
+    verify_factors(1, 0);
     verify_factors(2, 1, 2);
     verify_factors(4, 2, 2, 2);
     verify_factors(5, 1, 5);
