@@ -11,10 +11,19 @@
 
 #include "./factor.h"
 
-#define PORT 8080
+const int PORT = 8080;
+const int NUM_THREADS = 150;
+const int ACCEPT_QUEUE_LENGTH = (NUM_THREADS+5);
+static int socket_fd;
 
+
+#ifdef DEBUG
+#define DLOG(f_, ...) printf((f_), __VA_ARGS__)
 const char RESPONSE_400[] = "HTTP/1.1 400 Bad Request\nContent-Type: application/json\nConnection: close\nContent-Length: 2\n\n[]";
 const size_t RESPONSE_400_LENGTH = sizeof(RESPONSE_400)-1; //Skip trailing 0 byte!
+#else
+#define DLOG(f, ...) 
+#endif
 
 const char RESPONSE_200_PRELUDE[] = "HTTP/1.1 200 OK\nContent-Type: application/json; Connection: close\n";
 const size_t RESPONSE_200_PRELUDE_LENGTH = sizeof(RESPONSE_200_PRELUDE)-1; //Skip trailing 0 byte!
@@ -37,13 +46,15 @@ void safe_write(int fd, const char *buffer, size_t nbytes) {
     }
 }
 
-void *respond_400(int client_fd) {
+int respond_400(int client_fd) {
+    #ifdef DEBUG
     safe_write(client_fd, RESPONSE_400, RESPONSE_400_LENGTH);
+    #endif
     close(client_fd);
     return 0;
 }
 
-void *respond_200(int client_fd, size_t body_size, const char *body) {
+int respond_200(int client_fd, size_t body_size, const char *body) {
     char contentSizeBuffer[21]; //Enough for responses up a few kb in size
     safe_write(client_fd, RESPONSE_200_PRELUDE, RESPONSE_200_PRELUDE_LENGTH);
     
@@ -56,9 +67,7 @@ void *respond_200(int client_fd, size_t body_size, const char *body) {
     return 0;
 }
 
-void *handle_request(void *client_fd_as_voidp) {
-    int client_fd = (int)client_fd_as_voidp;
-
+int handle_request(int client_fd) {
     //long enough for 'GET /generate/18446744073709551616 HTTP/1.1\n\n\0'
     // (i.e. we could handle inputs up to 64 bit)
     const int max_line_length = 45; 
@@ -150,48 +159,81 @@ void *handle_request(void *client_fd_as_voidp) {
     
 }
 
-static int socket_fd;
-void cleanup() {
-    if(socket_fd > -1) {
-        close(socket_fd);
-    }
-}
 
-int main(int argc, char *argv[]) {
-    socket_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (socket_fd == -1) {
-        printf("socket creation failed.");
+int accept_and_handle_request(int thread_index, int fd) {
+    struct sockaddr_in client;
+    socklen_t len = sizeof(client);
+    int client_fd = accept(fd, (struct sockaddr*)&client, &len);
+    if (client_fd < 0) {
+        printf("accept() failed for thread %i / fd %i: %i.\n", thread_index, fd, errno);
         return 1;
     }
-    atexit(cleanup);
+    DLOG("Handling connection in thread %i\n", thread_index);
+    handle_request(client_fd);
+    return 0;
+}
 
-    struct sockaddr_in serv_addr, client;
+int setup_socket(int thread_index) {
+
+    int my_listen_fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (my_listen_fd == -1) {
+        printf("socket creation failed for thread %i: %i", thread_index, errno);
+        return 0;
+    }
+
+    int optval = 1;
+    if (setsockopt(my_listen_fd, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval))) {
+        printf("setsockopt(SO_REUSEPORT) failed for thread %i: %i\n", thread_index, errno);
+        return 0;
+    }
+
+    struct sockaddr_in serv_addr;
     bzero(&serv_addr, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     serv_addr.sin_port = htons(PORT);
 
-    if ((bind(socket_fd, (struct sockaddr*)&serv_addr, sizeof(serv_addr))) != 0) { 
-        printf("socket bind on 0.0.0.0:%i failed...\n", PORT); 
-        return 1;
+    if ((bind(my_listen_fd, (struct sockaddr*)&serv_addr, sizeof(serv_addr))) != 0) { 
+        printf("socket bind on 0.0.0.0:%i failed for thread %i: %i...\n", PORT, thread_index, errno); 
+        return 0;
     } 
 
-    if ((listen(socket_fd, 5)) != 0) { 
-        printf("Listen failed...\n"); 
-        return 1;
+    if ((listen(my_listen_fd, ACCEPT_QUEUE_LENGTH)) != 0) { 
+        printf("Listen failed for thread %i: %i.\n", thread_index, errno); 
+        return 0;
     } 
-    printf("Listening on 0.0.0.0:%i\n", PORT);
 
-    unsigned len = sizeof(client);
-    while (1) {
-        int client_fd = accept(socket_fd, (struct sockaddr*)&client, &len);
-        if (client_fd < 0) {
-            printf("accept() failed.\n");
-            return 1;
-        }
+    printf("Thread %i listening on 0.0.0.0:%i\n", thread_index, PORT);
+
+    return my_listen_fd;
+}
+
+void *listen_and_accept_requests(void *thread_index_as_voidp) {
+    int thread_index = (int)thread_index_as_voidp;
+    //int my_listen_fd = setup_socket(thread_index);
+    int my_listen_fd = socket_fd;
+
+    DLOG("Thread %i starting to handle requests.\n", thread_index);
+    while (!accept_and_handle_request(thread_index, my_listen_fd)) {
+    }
+
+    printf("Thread %i terminating.\n", thread_index);
+    return 0;
+}
+
+
+
+int main(int argc, char *argv[]) {
+    socket_fd = setup_socket(0);
+
+    for (int i=1; i<=NUM_THREADS; i++) {
         pthread_t thread;
-        pthread_create(&thread, NULL, handle_request, (void*)(int64_t)client_fd);
+        pthread_create(&thread, NULL, listen_and_accept_requests, (void*)(int64_t)i);
         pthread_detach(thread);
     }
-    
+
+    printf("Ready.\n");
+    while(1);
+    while (!accept_and_handle_request(0, socket_fd)) {
+    }
 }

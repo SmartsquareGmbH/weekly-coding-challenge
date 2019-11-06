@@ -2,6 +2,10 @@
 #include <stdio.h>
 
 uint8_t factor(factor_int_t n, sized_factors_t factors) {
+    if (n <= 1) {
+        return 0;
+    }
+
     factor_int_t p = 2;
     factor_int_t psquared = 4;
     uint8_t nfactors = 0;
@@ -17,7 +21,7 @@ uint8_t factor(factor_int_t n, sized_factors_t factors) {
         }
     }
 
-    if (n > 1 || nfactors == 0) {
+    if (n > 1) {
         factors[nfactors] = n;
         nfactors++;
     }
