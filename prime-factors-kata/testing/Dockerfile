@@ -11,5 +11,4 @@ RUN pip install -r requirements.txt
 
 ADD locustfile.py locustfile.py
 
-EXPOSE 8089 5557 5558
-ENTRYPOINT [ "locust", "--host=http://host.docker.internal:8080"]
+ENTRYPOINT [ "locust", "--no-web", "-c=100", "-r=10", "-t=5m", "--host=http://host.docker.internal:8080"]

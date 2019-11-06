@@ -1,16 +1,9 @@
-# Tests
+# Lasttests
 
-Dieser Ordner enthält zum einen den Locust Container um Metriken der verschiedenen Abgaben zu sammeln und zum anderen ein Shell Skript um die Funktionalität zu überprüfen.
+Dieser Ordner enhält das Locustfile und das dazugehörige Dockerfile um die Abgaben zu testen zu die Metriken zu vergleichen.
 
-### Lasttests
+### Ausführung
 ```bash
 docker build . -t locust-coding-challenge
-docker run -p 8089:8089 locust-coding-challenge
+docker run locust-coding-challenge
 ```
-
-### Funktionstests
-```bash
-./test.sh
-```
-
-[Dokumentation](https://docs.locust.io/en/stable/index.html)
