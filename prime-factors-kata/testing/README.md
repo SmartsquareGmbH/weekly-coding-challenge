@@ -1,6 +1,6 @@
 # Tests
 
-Dieser Ordner enthält zum einen den Locust Container um Metriken der verschiedenen Abgaben und zum anderen ein Shell Skript um die Funktionalität zu überprüfen.
+Dieser Ordner enthält zum einen den Locust Container um Metriken der verschiedenen Abgaben zu sammeln und zum anderen ein Shell Skript um die Funktionalität zu überprüfen.
 
 ### Lasttests
 ```bash

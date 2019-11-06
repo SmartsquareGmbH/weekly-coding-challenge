@@ -13,7 +13,8 @@ Die Lösungen können wir in Form von Pull Requests im Projekt (https://github.c
 * Der Service antwortet auf GET-Requests unter dem Pfad /generate/_n_, wobei _n_ die zu faktorierende Zahl ist
 * Der Service muss mindestens in der Lage sein, 32-bit integer korrekt zu verarbeiten.
 * Die Antwort des Service ist als JSON _array_ von _number_ zurück zu liefern, mit passendem Content-Type (z.B. application/json)
-* Ein test-script, dass diese Anforderungen überprüft befindet sich in diesem Verzeichnis unter dem Namen test.sh. Zur Ausführung des Scriptes muss jq installiert sein.
+* Ein test-script, dass diese Anforderungen überprüft befindet sich im Verzeichnis [testing](testing) unter dem Namen test.sh. Zur Ausführung des Scriptes muss jq installiert sein.
+* Die Metriken zur Geschwindigkeit und damit Bewertung werden mit dem Locust-Container im [testing](testing) Ordner gesammelt.
 * Die Abgabe sollte eine kurze README-Datei mit Informationen zum kompilieren und starten des Projekts enthalten.
 
 ## Beispielanfragen und -Antworten:
