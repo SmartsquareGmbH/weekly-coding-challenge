@@ -11,4 +11,4 @@ RUN pip install -r requirements.txt
 
 ADD locustfile.py locustfile.py
 
-ENTRYPOINT [ "locust", "--no-web", "-c=100", "-r=10", "-t=5m", "--host=http://localhost:8080"]
+ENTRYPOINT [ "locust", "--no-web", "-c=100", "-r=10", "-t=5m"]
