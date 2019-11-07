@@ -20,4 +20,12 @@ class FactoringControllerTest {
 
         assert(response.equals("[2,3,3,37]"))
     }
+
+    @Test
+    fun prime_factoring_with_huge_payload() {
+        val result = factoringController.primeFactors(4294967295)
+
+        assert(result.sum() == 65819L)
+    }
+
 }
