@@ -1,13 +1,15 @@
 package de.smartsquare.factoring
 
-import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
-@Controller
+@RestController
+@RequestMapping("/generate")
 class FactoringController {
 
-    @GetMapping("/generate/{payload}")
+    @GetMapping("/{payload}")
     fun primeFactors(@PathVariable payload: Long): List<Long> {
         val primes: MutableList<Long> = mutableListOf()
         var prime: Long = 2

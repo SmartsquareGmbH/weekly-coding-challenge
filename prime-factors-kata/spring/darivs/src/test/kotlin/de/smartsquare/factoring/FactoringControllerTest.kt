@@ -1,14 +1,23 @@
 package de.smartsquare.factoring
 
 import org.junit.jupiter.api.Test
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.web.servlet.get
+import org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup
 
+@SpringBootTest
 class FactoringControllerTest {
+    private val controller = standaloneSetup(FactoringController()).build()
     private val factoringController = FactoringController()
 
     @Test
-    fun primeFactors() {
-        val result = factoringController.primeFactors(666)
+    fun prime_factoring() {
+        val response = controller
+            .get("/generate/" + 666)
+            .andReturn()
+            .response
+            .contentAsString
 
-        assert(result == listOf(2L, 3L, 3L, 37L))
+        assert(response.equals("[2,3,3,37]"))
     }
 }
