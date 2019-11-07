@@ -4,6 +4,6 @@ Dieser Ordner enhält das Locustfile und das dazugehörige Dockerfile um die Abg
 
 ### Ausführung
 ```bash
-docker build . -t locust-coding-challenge
-docker run --network host locust-coding-challenge
+./run-locust.sh [name]
 ```
+_name_ wird als Präfix für die exportierten CSV dateien verwendet. Falls _name_ nicht angegeben wurde, wird ein Timestamp verwendet.
