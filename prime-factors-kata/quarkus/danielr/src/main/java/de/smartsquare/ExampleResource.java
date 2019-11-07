@@ -17,14 +17,19 @@ public class ExampleResource {
     public String primefactors(@PathParam("number") long number) {
         List<Long> primes = new ArrayList<>();
         long prime = 2;
-        while (number > 1) {
-            while (number % prime == 0) {
+        long primeSq = prime * prime;
+        while (primeSq <= number) {
+            if (number % prime == 0) {
                 primes.add(prime);
                 number /= prime;
+            } else {
+                prime++;
+                primeSq = prime * prime;
             }
-            prime++;
         }
-
+        if (number != 1) {
+            primes.add(number);
+        }
         return primes.toString();
     }
 }

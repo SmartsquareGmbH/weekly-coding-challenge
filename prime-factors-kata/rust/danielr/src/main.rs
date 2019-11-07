@@ -43,14 +43,21 @@ fn main() {
 
 fn factorize(number: u32) -> Vec<u32> {
     let mut primes: Vec<u32> = Vec::new();
-    let mut n: u32 = number;
+    let mut n = number;
     let mut prime = 2;
-    while n > 1 {
-    	while n % prime == 0 {
+    let mut prime_sq = prime * prime;
+    while prime_sq <= n {
+	if n % prime == 0 {
 	    primes.push(prime);
 	    n /= prime;
 	}
-	prime += 1;
+	else {
+	    prime += 1;
+	    prime_sq = prime * prime;
+	}
+    }
+    if n != 1 {
+	primes.push(n);
     }
     primes
 }
