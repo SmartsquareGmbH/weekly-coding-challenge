@@ -1,6 +1,22 @@
 # Lasttests
 
-Dieser Ordner enhält das Locustfile und das dazugehörige Dockerfile um die Abgaben zu testen und die Metriken zu vergleichen.
+Dieser Ordner enhält Konfigurationen und Scripte Dockerfile um die Abgaben zu testen und die Metriken zu vergleichen.
+
+## Gatling
+
+### Ausführung unter Docker (notlösung!)
+```bash
+./run-gatling.sh
+```
+
+### Ausführung nativ (empfohlen!)
+* Gatling herunterladen und entpacken: https://gatling.io/open-source
+* `/path/to/gatling-home/bin/gatling.sh -sf gatling -rf "gatling-results" -rsf gatling -rd "Load test"`  
+
+### Auswertung
+HTML reports und logfiles liegen in ./gatling-results/
+
+## Locust
 
 ### Ausführung
 ```bash
