@@ -1,4 +1,5 @@
-from locust import HttpLocust, TaskSet, task
+from locust import TaskSet, task
+from locust.contrib.fasthttp import FastHttpLocust
 import random
 import os
 import json
@@ -22,9 +23,9 @@ class StressTest(TaskSet):
 
     @task
     def fetch_random_prime_factor(self):
-        response = self.client.get("/generate/%i" % self.n)
+        response=self.client.get("/generate/%i" % self.n)
         assert response.status_code is 200, "Unexpected response code: %i" % response.status_code
         assert json.loads(response.text) == self.expected_response
 
-class Instructor(HttpLocust):
-    task_set = StressTest
+class Instructor(FastHttpLocust):
+    task_set=StressTest
