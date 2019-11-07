@@ -12,18 +12,15 @@ uint8_t factor(factor_int_t n, sized_factors_t factors) {
     }
     uint8_t nfactors = 0;
 
-#ifdef FASTER_FACTORS
-    //fast-path factor '2':
+//fast-path factor '2':
     while ((n & 1) == 0) {
         factors[nfactors++] = 2;
         n >>= 1;
     }
     factor_int_t p = 3;
     factor_int_t psquared = 9;
+#ifdef FASTER_FACTORS
     int small_primes_idx = 0;
-#else
-    factor_int_t p = 2;
-    factor_int_t psquared = 4;
 #endif
 
     while (psquared <= n) {
@@ -36,10 +33,10 @@ uint8_t factor(factor_int_t n, sized_factors_t factors) {
             if (small_primes_idx < N_SMALL_PRIMES) {
                 p = SMALL_PRIMES[small_primes_idx++];
             } else {
-                p++;
+                p+=2;
             }
 #else
-            p++;
+            p+=2;
 #endif
             psquared = p*p;
         }
