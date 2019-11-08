@@ -38,7 +38,7 @@ Gatling Tests ausgeführt auf Arch Linux (Linux 5.3.8-arch1-1) mit Intel® Core�
 | :2nd_place_medal: | jkrafczyk  | rust ([hyper](https://github.com/hyperium/hyper))        | 49474.367                                |
 | :3rd_place_medal: | danielr    | rust ([hyper](https://github.com/hyperium/hyper))        | 46841.767                                |
 |                   | deen13     | rust ([nickel](https://github.com/nickel-org/nickel.rs)) | 37908.125 (24 failed / 4548975 requests) |
-|                   | jkrafyczyk | c                                                        | 24250.5                                  |
+|                   | jkrafczyk  | c                                                        | 24250.5                                  |
 |                   | danielr    | java ([quarkus native](https://quarkus.io/))             | 20412.417                                |
 |                   | darivs     | java ([spring boot](https://spring.io/))                 | 20376.575                                |
 |                   | karstenamf | javascript ([express](https://expressjs.com/))           | 13028.958                                |
