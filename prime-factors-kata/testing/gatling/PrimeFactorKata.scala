@@ -22,12 +22,11 @@ class PrimeFactorKata extends Simulation {
         .forever() {
             feed(feeder)
             .exec(
-                http("factor ${n}")
+                http("factor_${n}")
                     .get("/generate/${n}")
                     .check(
                         status.is(200),
                         jsonPath("$").ofType[Seq[Any]].is("${factors}"),
-                        bodyString.saveAs("resp_json")
                     )
             )
         }
