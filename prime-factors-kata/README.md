@@ -30,7 +30,7 @@ GET /generate/4294967295
 
 ## Leaderbord
 
-Gatling Tests ausgeführt auf Arch Linux (Linux 5.3.8-arch1-1) mit Intel® Core™ i7-7700T CPU @ 2.90GHz × 8 und 15,6 GiB RAM.
+Gatling Tests ausgeführt auf Arch Linux (Linux 5.3.8-arch1-1) mit Intel® Core™ i7-7700T CPU @ 2.90GHz × 8 und 15,6 GiB RAM.
 
 |                   | Autor      | Technologie                                              | Requests/s                               |
 |-------------------|------------|----------------------------------------------------------|------------------------------------------|
