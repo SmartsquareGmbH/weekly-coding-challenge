@@ -13,7 +13,7 @@ public class ExampleResource {
 
     @GET
     @Path("{number}")
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
     public String primefactors(@PathParam("number") long number) {
         List<Long> primes = new ArrayList<>();
         long prime = 2;

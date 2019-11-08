@@ -27,3 +27,18 @@ GET /generate/254
 
 GET /generate/4294967295  
 [3, 5, 17, 257, 65537]
+
+## Leaderbord
+
+Gatling Tests ausgeführt auf Arch Linux (Linux 5.3.8-arch1-1) mit Intel® Core™ i7-7700T CPU @ 2.90GHz × 8 und 15,6 GiB RAM.
+
+|                   | Autor      | Technologie                                              | Requests/s                               |
+|-------------------|------------|----------------------------------------------------------|------------------------------------------|
+| :1st_place_medal: | rubengees  | go ([fasthttp](https://github.com/valyala/fasthttp))     | 56916.917                                |
+| :2nd_place_medal: | jkrafczyk  | rust ([hyper](https://github.com/hyperium/hyper))        | 49474.367                                |
+| :3rd_place_medal: | danielr    | rust ([hyper](https://github.com/hyperium/hyper))        | 46841.767                                |
+|                   | deen13     | rust ([nickel](https://github.com/nickel-org/nickel.rs)) | 37908.125 (24 failed / 4548975 requests) |
+|                   | jkrafyczyk | c                                                        | 24250.5                                  |
+|                   | danielr    | java ([quarkus native](https://quarkus.io/))             | 20412.417                                |
+|                   | darivs     | java ([spring boot](https://spring.io/))                 | 20376.575                                |
+|                   | karstenamf | javascript ([express](https://expressjs.com/))           | 13028.958                                |

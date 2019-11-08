@@ -9,8 +9,8 @@ fn api(req: Request<Body>) -> Response<Body> {
 
     let path: Vec<&str> = req.uri().path().split('/').collect();
     if path.len() <= 2 || path[1] != "generate" {
-	*response.status_mut() = StatusCode::NOT_FOUND;
-	return response;
+    	*response.status_mut() = StatusCode::NOT_FOUND;
+    	return response;
     }
 
     let maybe_number = path[2].parse::<u32>();
@@ -46,18 +46,21 @@ fn factorize(number: u32) -> Vec<u32> {
     let mut n = number;
     let mut prime = 2;
     let mut prime_sq = prime * prime;
+
     while prime_sq <= n {
-	if n % prime == 0 {
-	    primes.push(prime);
-	    n /= prime;
-	}
-	else {
-	    prime += 1;
-	    prime_sq = prime * prime;
-	}
+	    if n % prime == 0 {
+	       primes.push(prime);
+	       n /= prime;
+    	}
+	    else {
+	      prime += 1;
+	      prime_sq = prime * prime;
+	    }
     }
+
     if n != 1 {
-	primes.push(n);
+	    primes.push(n);
     }
+
     primes
 }

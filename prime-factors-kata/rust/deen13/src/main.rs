@@ -2,20 +2,28 @@
 
 use nickel::{Nickel, HttpRouter};
 
-fn factors(n: u64) -> Vec<u64> {
-    let mut factors = vec![];
-    let mut num = n;
-    let mut div = 2;
+fn factors(number: u64) -> Vec<u64> {
+    let mut primes: Vec<u64> = Vec::new();
+    let mut n = number;
+    let mut prime = 2;
+    let mut prime_sq = prime * prime;
 
-    while num > 1 {
-        while num % div == 0 {
-            factors.push(div);
-            num = num / div;
-        }
-        div += 1;
+    while prime_sq <= n {
+	    if n % prime == 0 {
+	       primes.push(prime);
+	       n /= prime;
+    	}
+	    else {
+	      prime += 1;
+	      prime_sq = prime * prime;
+	    }
     }
 
-    factors
+    if n != 1 {
+	    primes.push(n);
+    }
+
+    primes
 }
 
 fn main() {
