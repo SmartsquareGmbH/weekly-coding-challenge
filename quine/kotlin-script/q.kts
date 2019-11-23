@@ -1,1 +1,1 @@
-java.io.File("q.kts").forEachLine{println(it)}
+println(java.io.File("q.kts").readText())
