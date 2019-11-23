@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#This is rouhgly based on Json Wilsons Java solution.
+#This is rouhgly based on Jason Wilsons Java solution.
 set -e
 SQ=$(printf "\x27")
 
