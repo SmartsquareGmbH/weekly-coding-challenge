@@ -13,16 +13,18 @@ func main() {
 	fileContent := readFile("input.txt")
 	program := parse(fileContent)
 
-	// Additional adjustments as in the task.
-	program[1] = 12
-	program[2] = 2
-
-	result, err := runProgram(program)
+	part1Result, err := runProgramWithVerbAndNoun(program, 12, 1)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("%d\n", result[0])
+	part2Verb, part2Noun, err := findVerbAndNounForResult(program, 19690720)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(part1Result)
+	fmt.Println(100*part2Verb + part2Noun)
 }
 
 func readFile(filename string) string {
@@ -50,28 +52,35 @@ func parse(input string) []int {
 	return result
 }
 
-func runProgram(program []int) (result []int, err error) {
-	result = program
+func findVerbAndNounForResult(program []int, result int) (verb int, noun int, err error) {
+	// The values for verb and noun are defined to be in [0, 100].
+	// Iterate over all possibilities and return once found.
+	for i := 0; i < 100; i++ {
+		for j := 0; j < 100; j++ {
+			part2Result, err := runProgramWithVerbAndNoun(program, i, j)
+			if err != nil {
+				return 0, 0, err
+			}
 
-	for i := 0; i < len(result); i += 4 {
-		opcode := result[i]
-
-		if opcode == 99 {
-			return result, nil
-		} else {
-			inputPosition1 := result[i+1]
-			inputPosition2 := result[i+2]
-			outputPosition := result[i+3]
-
-			if opcode == 1 {
-				result[outputPosition] = result[inputPosition1] + result[inputPosition2]
-			} else if opcode == 2 {
-				result[outputPosition] = result[inputPosition1] * result[inputPosition2]
-			} else {
-				return nil, errors.New(fmt.Sprintf("Unknown opcode detected: %d", opcode))
+			if part2Result == result {
+				return i, j, nil
 			}
 		}
 	}
 
-	return nil, errors.New("no terminating opcode (99) found in program")
+	return 0, 0, errors.New("no program execution with the result 19690720 found")
+}
+
+func runProgramWithVerbAndNoun(program []int, verb int, noun int) (result int, err error) {
+	programCopy := append([]int(nil), program...)
+	programCopy[1] = verb
+	programCopy[2] = noun
+
+	programResult, err := runProgram(programCopy)
+
+	if err != nil {
+		return 0, err
+	} else {
+		return programResult[0], nil
+	}
 }
