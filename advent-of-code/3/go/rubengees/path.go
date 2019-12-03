@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 )
 
 type Direction int
@@ -26,6 +25,7 @@ type Intersection struct {
 	x                 int
 	y                 int
 	manhattanDistance int
+	steps             int
 }
 
 // Looks for intersections in the given paths and returns the closest to the central point.
@@ -37,21 +37,29 @@ func findClosestIntersection(path1 Path, path2 Path) (result Intersection, err e
 		if closestIntersection.manhattanDistance == 0 || intersection.manhattanDistance < closestIntersection.manhattanDistance {
 			closestIntersection = intersection
 		}
-
-		println(
-			fmt.Sprintf(
-				"found intersection at x: %d, y: %d with manhattan distance %d",
-				intersection.x,
-				intersection.y,
-				intersection.manhattanDistance,
-			),
-		)
 	}
 
 	if closestIntersection.manhattanDistance == 0 {
 		return closestIntersection, errors.New("no intersection found for input")
 	} else {
 		return closestIntersection, nil
+	}
+}
+
+func findShortestIntersection(path1 Path, path2 Path) (result Intersection, err error) {
+	intersections := findIntersections(path1, path2)
+
+	var shortestIntersection Intersection
+	for _, intersection := range intersections {
+		if shortestIntersection.steps == 0 || intersection.steps < shortestIntersection.steps {
+			shortestIntersection = intersection
+		}
+	}
+
+	if shortestIntersection.steps == 0 {
+		return shortestIntersection, errors.New("no intersection found for input")
+	} else {
+		return shortestIntersection, nil
 	}
 }
 
@@ -62,19 +70,26 @@ type Point struct {
 
 // Looks for intersections in the given paths and returns them as a slice.
 func findIntersections(path1 Path, path2 Path) []Intersection {
-	path1Points := make(map[Point]bool)
+	// Save the paths in a map. The value is the amount of steps it took, to reach the point.
+	path1Points := make(map[Point]int)
 	result := make([]Intersection, 0)
 
+	steps1 := 0
 	iteratePoints(path1, func(point Point) {
-		path1Points[point] = true
+		steps1 += 1
+		path1Points[point] = steps1
 	})
 
+	steps2 := 0
 	iteratePoints(path2, func(point Point) {
-		if path1Points[point] {
+		steps2 += 1
+
+		if path1Point := path1Points[point]; path1Point > 0 {
 			intersection := Intersection{
 				x:                 point.x,
 				y:                 point.y,
 				manhattanDistance: abs(point.x) + abs(point.y),
+				steps:             path1Point + steps2,
 			}
 
 			result = append(result, intersection)

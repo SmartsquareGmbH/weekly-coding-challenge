@@ -27,6 +27,14 @@ func main() {
 	} else {
 		println(closestIntersection.manhattanDistance)
 	}
+
+	shortestIntersection, err := findShortestIntersection(paths[0], paths[1])
+
+	if err != nil {
+		log.Fatal(err)
+	} else {
+		println(shortestIntersection.steps)
+	}
 }
 
 func readFile(filename string) []string {
