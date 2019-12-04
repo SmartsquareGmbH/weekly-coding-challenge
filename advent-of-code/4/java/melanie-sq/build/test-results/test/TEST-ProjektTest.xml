@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ProjektTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2019-12-04T14:02:45" hostname="melanie-Inspiron-5570" time="0.364">
+  <properties/>
+  <testcase name="findAllPasswordsWithOnly2Doubles()" classname="ProjektTest" time="0.364"/>
+  <system-out><![CDATA[Number of Passwords: 324
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
