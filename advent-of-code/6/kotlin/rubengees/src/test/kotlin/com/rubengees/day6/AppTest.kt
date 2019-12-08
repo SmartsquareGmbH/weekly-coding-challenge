@@ -16,9 +16,9 @@ class AppTest {
 
         result.shouldHaveSize(11)
         result["COM"].shouldBeNull()
-        result["B"] shouldEqual listOf("COM")
-        result["G"] shouldEqual listOf("B")
-        result["L"] shouldEqual listOf("K")
+        result["B"] shouldEqual "COM"
+        result["G"] shouldEqual "B"
+        result["L"] shouldEqual "K"
     }
 
     @ParameterizedTest
@@ -36,5 +36,27 @@ class AppTest {
         val map = parse(input)
 
         calculateAllOrbits(map) shouldEqual 42
+    }
+
+    @Test
+    fun `finding intersection between two planets should return correct result`() {
+        val input = listOf(
+            "COM)B", "B)C", "C)D", "D)E", "E)F", "B)G", "G)H", "D)I", "E)J", "J)K", "K)L", "K)YOU", "I)SAN"
+        )
+
+        val map = parse(input)
+
+        findIntersection(map, "YOU", "SAN") shouldEqual "D"
+    }
+
+    @Test
+    fun `calculating shortest way should return correct result`() {
+        val input = listOf(
+            "COM)B", "B)C", "C)D", "D)E", "E)F", "B)G", "G)H", "D)I", "E)J", "J)K", "K)L", "K)YOU", "I)SAN"
+        )
+
+        val map = parse(input)
+
+        calculateShortestWay(map, "YOU", "SAN") shouldEqual 4
     }
 }

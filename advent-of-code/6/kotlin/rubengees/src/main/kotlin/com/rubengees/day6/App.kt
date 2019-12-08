@@ -1,3 +1,5 @@
+@file:JvmName("App")
+
 package com.rubengees.day6
 
 import java.nio.file.Files
@@ -8,25 +10,36 @@ fun main() {
     val orbitMap = parse(input)
 
     println(calculateAllOrbits(orbitMap))
+    println(calculateShortestWay(orbitMap, "YOU", "SAN"))
 }
 
-fun parse(input: List<String>): Map<String, List<String>> {
-    return input
-        .map {
-            val (first, second) = it.split(")")
+fun parse(input: List<String>): Map<String, String> = input
+    .map { it.split(")") }
+    .associate { (to, from) -> from to to }
 
-            first to second
-        }
-        .groupingBy { it.second }
-        .aggregate { _, accumulator, element, _ -> accumulator?.plus(element.first) ?: listOf(element.first) }
+fun calculateAllOrbits(orbitMap: Map<String, String>): Int = orbitMap.keys.map { calculateOrbits(orbitMap, it) }.sum()
+
+fun calculateOrbits(orbitMap: Map<String, String>, planet: String): Int = iterateOrbits(orbitMap, planet).size
+
+fun calculateShortestWay(orbitMap: Map<String, String>, start: String, end: String): Int {
+    val intersection = requireNotNull(findIntersection(orbitMap, start, end)) {
+        "No intersection between $start and $end found"
+    }
+
+    val startToIntersection = iterateOrbits(orbitMap, start, intersection)
+    val endToIntersection = iterateOrbits(orbitMap, end, intersection)
+
+    return startToIntersection.size - 1 + endToIntersection.size - 1
 }
 
-fun calculateAllOrbits(orbitMap: Map<String, List<String>>): Int {
-    return orbitMap.keys.map { calculateOrbits(orbitMap, it) }.sum()
+fun findIntersection(orbitMap: Map<String, String>, planet1: String, planet2: String): String? {
+    return iterateOrbits(orbitMap, planet1).intersect(iterateOrbits(orbitMap, planet2)).firstOrNull()
 }
 
-fun calculateOrbits(orbitMap: Map<String, List<String>>, planet: String): Int {
-    val directOrbitedPlanets = orbitMap[planet]
-
-    return (directOrbitedPlanets?.size ?: 0) + (directOrbitedPlanets?.sumBy { calculateOrbits(orbitMap, it) } ?: 0)
+private fun iterateOrbits(orbitMap: Map<String, String>, start: String, end: String? = null): List<String> {
+    return when (val orbitedPlanet = orbitMap[start]) {
+        null -> emptyList()
+        end -> listOf(orbitedPlanet)
+        else -> listOf(orbitedPlanet) + iterateOrbits(orbitMap, orbitedPlanet, end)
+    }
 }

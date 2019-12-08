@@ -18,7 +18,7 @@ dependencies {
 }
 
 application {
-    mainClassName = 'com.rubengees.day6.AppKt'
+    mainClassName = 'com.rubengees.day6.App'
 }
 
 test {
