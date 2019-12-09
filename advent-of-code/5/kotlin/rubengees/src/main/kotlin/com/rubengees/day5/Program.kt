@@ -1,10 +1,10 @@
 package com.rubengees.day5
 
-class Program private constructor(private val memory: List<Int>) {
+class Program private constructor(private val memory: List<Int>, val input: Int = 0) {
 
     companion object {
-        fun parse(input: String): Program {
-            return input.split(",")
+        fun parse(rawProgram: String): Program {
+            return rawProgram.split(",")
                 .map { it.trim().toInt() }
                 .let { Program(it) }
         }
@@ -14,9 +14,11 @@ class Program private constructor(private val memory: List<Int>) {
 
     operator fun get(index: Int) = memory[index]
 
+    fun withInput(value: Int) = Program(memory, value)
+
     fun update(index: Int, value: Int) = memory.toMutableList()
         .apply { set(index, value) }
-        .let { Program(it) }
+        .let { Program(it, input) }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

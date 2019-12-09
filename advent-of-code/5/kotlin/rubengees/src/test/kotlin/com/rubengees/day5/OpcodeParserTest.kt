@@ -14,6 +14,7 @@ class OpcodeParserTest {
             return listOf(
                 TestRow(1, Opcode.Add::class),
                 TestRow(2, Opcode.Multiply::class),
+                TestRow(3, Opcode.ReadInput::class),
                 TestRow(99, Opcode.Halt::class)
             )
         }

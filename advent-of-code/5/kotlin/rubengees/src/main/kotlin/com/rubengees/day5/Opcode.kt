@@ -1,6 +1,7 @@
 package com.rubengees.day5
 
 import com.rubengees.day5.Opcode.OpcodeResult.HaltProgram
+import com.rubengees.day5.Opcode.OpcodeResult.Output
 import com.rubengees.day5.Opcode.OpcodeResult.ProgramModification
 
 sealed class Opcode<out O : Opcode.OpcodeResult>(val argumentCount: Int) {
@@ -27,6 +28,25 @@ sealed class Opcode<out O : Opcode.OpcodeResult>(val argumentCount: Int) {
         }
     }
 
+    object ReadInput : Opcode<ProgramModification>(1) {
+
+        override fun execute(program: Program, args: List<Argument>): ProgramModification {
+            val (output) = args
+            val newProgram = program.update(output.value, program.input)
+
+            return ProgramModification(newProgram)
+        }
+    }
+
+    object WriteOutput : Opcode<Output>(1) {
+
+        override fun execute(program: Program, args: List<Argument>): Output {
+            val (inputPosition) = args
+
+            return Output(inputPosition.resolve(program))
+        }
+    }
+
     object Halt : Opcode<HaltProgram>(0) {
         override fun execute(program: Program, args: List<Argument>) = HaltProgram
     }
@@ -44,6 +64,7 @@ sealed class Opcode<out O : Opcode.OpcodeResult>(val argumentCount: Int) {
     sealed class OpcodeResult {
         data class ProgramModification(val newProgram: Program) : OpcodeResult()
         data class InstructionPointerModification(val newInstructionPointer: Int) : OpcodeResult()
+        data class Output(val value: Int) : OpcodeResult()
         object HaltProgram : OpcodeResult()
     }
 }

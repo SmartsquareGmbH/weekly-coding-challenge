@@ -2,7 +2,8 @@ package com.rubengees.day5
 
 object IntCodeExecutor {
 
-    fun run(input: Program): Program {
+    fun run(input: Program): ProgramExecutionResult {
+        var outputs = emptyList<Int>()
         var instructionPointer = 0
         var program = input
 
@@ -18,12 +19,18 @@ object IntCodeExecutor {
                 is Opcode.OpcodeResult.InstructionPointerModification -> {
                     instructionPointer = result.newInstructionPointer
                 }
+                is Opcode.OpcodeResult.Output -> {
+                    outputs = outputs + result.value
+                    instructionPointer += opcode.argumentCount + 1
+                }
                 is Opcode.OpcodeResult.HaltProgram -> {
-                    return program
+                    return ProgramExecutionResult(program, outputs)
                 }
             }
         }
 
         error("Program exited without HALT opcode.")
     }
+
+    class ProgramExecutionResult(val program: Program, val outputs: List<Int>)
 }
