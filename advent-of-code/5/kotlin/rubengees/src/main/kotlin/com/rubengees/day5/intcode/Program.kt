@@ -1,4 +1,4 @@
-package com.rubengees.day5
+package com.rubengees.day5.intcode
 
 class Program private constructor(private val memory: List<Int>, val input: Int = 0) {
 

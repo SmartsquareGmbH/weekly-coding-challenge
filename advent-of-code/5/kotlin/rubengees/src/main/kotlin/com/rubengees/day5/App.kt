@@ -2,6 +2,8 @@
 
 package com.rubengees.day5
 
+import com.rubengees.day5.intcode.IntCodeExecutor
+import com.rubengees.day5.intcode.Program
 import java.nio.file.Files
 import java.nio.file.Paths
 

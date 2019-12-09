@@ -1,4 +1,4 @@
-package com.rubengees.day5
+package com.rubengees.day5.intcode
 
 import org.amshove.kluent.shouldEqual
 import org.junit.jupiter.api.Test

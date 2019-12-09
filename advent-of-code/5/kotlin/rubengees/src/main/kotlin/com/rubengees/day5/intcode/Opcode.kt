@@ -1,10 +1,25 @@
-package com.rubengees.day5
+package com.rubengees.day5.intcode
 
-import com.rubengees.day5.Opcode.OpcodeResult.HaltProgram
-import com.rubengees.day5.Opcode.OpcodeResult.Output
-import com.rubengees.day5.Opcode.OpcodeResult.ProgramModification
+import com.rubengees.day5.digits
+import com.rubengees.day5.intcode.Opcode.OpcodeResult.HaltProgram
+import com.rubengees.day5.intcode.Opcode.OpcodeResult.Output
+import com.rubengees.day5.intcode.Opcode.OpcodeResult.ProgramModification
+import com.rubengees.day5.mergeDigits
 
 sealed class Opcode<out O : Opcode.OpcodeResult>(val argumentCount: Int) {
+
+    companion object {
+        fun parse(input: Int): Opcode<OpcodeResult> {
+            return when (val code = input.digits().take(2).mergeDigits()) {
+                1 -> Add
+                2 -> Multiply
+                3 -> ReadInput
+                4 -> WriteOutput
+                99 -> Halt
+                else -> error("Unknown opcode: $code")
+            }
+        }
+    }
 
     abstract fun execute(program: Program, args: List<Argument>): O
 
@@ -49,16 +64,6 @@ sealed class Opcode<out O : Opcode.OpcodeResult>(val argumentCount: Int) {
 
     object Halt : Opcode<HaltProgram>(0) {
         override fun execute(program: Program, args: List<Argument>) = HaltProgram
-    }
-
-    data class Argument(val value: Int, val mode: ArgumentMode) {
-
-        fun resolve(program: Program) = when (mode) {
-            ArgumentMode.POSITION -> program[value]
-            ArgumentMode.IMMEDIATE -> value
-        }
-
-        enum class ArgumentMode { POSITION, IMMEDIATE }
     }
 
     sealed class OpcodeResult {

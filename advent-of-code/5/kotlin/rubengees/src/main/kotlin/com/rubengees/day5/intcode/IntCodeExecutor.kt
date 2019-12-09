@@ -1,4 +1,9 @@
-package com.rubengees.day5
+package com.rubengees.day5.intcode
+
+import com.rubengees.day5.intcode.Opcode.OpcodeResult.HaltProgram
+import com.rubengees.day5.intcode.Opcode.OpcodeResult.InstructionPointerModification
+import com.rubengees.day5.intcode.Opcode.OpcodeResult.Output
+import com.rubengees.day5.intcode.Opcode.OpcodeResult.ProgramModification
 
 object IntCodeExecutor {
 
@@ -8,22 +13,22 @@ object IntCodeExecutor {
         var program = input
 
         while (instructionPointer < program.length) {
-            val opcode = OpcodeParser.parse(program[instructionPointer])
-            val args = ArgumentParser.parse(program, opcode.argumentCount, instructionPointer)
+            val opcode = Opcode.parse(program[instructionPointer])
+            val args = Argument.parse(program, opcode.argumentCount, instructionPointer)
 
             when (val result = opcode.execute(program, args)) {
-                is Opcode.OpcodeResult.ProgramModification -> {
+                is ProgramModification -> {
                     program = result.newProgram
                     instructionPointer += opcode.argumentCount + 1
                 }
-                is Opcode.OpcodeResult.InstructionPointerModification -> {
+                is InstructionPointerModification -> {
                     instructionPointer = result.newInstructionPointer
                 }
-                is Opcode.OpcodeResult.Output -> {
+                is Output -> {
                     outputs = outputs + result.value
                     instructionPointer += opcode.argumentCount + 1
                 }
-                is Opcode.OpcodeResult.HaltProgram -> {
+                is HaltProgram -> {
                     return ProgramExecutionResult(program, outputs)
                 }
             }
