@@ -17,6 +17,7 @@ fun main() {
     day2Part1(day2Program)
     day2Part2(day2Program)
     day5Part1(day5Program)
+    day5Part2(day5Program)
 }
 
 private fun day2Part1(program: Program) {
@@ -40,6 +41,12 @@ private fun day2Part2(program: Program) {
 
 private fun day5Part1(program: Program) {
     val result = IntCodeExecutor.run(program.withInput(1))
+
+    println(result.outputs)
+}
+
+private fun day5Part2(program: Program) {
+    val result = IntCodeExecutor.run(program.withInput(5))
 
     println(result.outputs)
 }

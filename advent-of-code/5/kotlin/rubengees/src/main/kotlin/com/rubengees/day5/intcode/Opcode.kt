@@ -2,6 +2,7 @@ package com.rubengees.day5.intcode
 
 import com.rubengees.day5.digits
 import com.rubengees.day5.intcode.Opcode.OpcodeResult.HaltProgram
+import com.rubengees.day5.intcode.Opcode.OpcodeResult.InstructionPointerModification
 import com.rubengees.day5.intcode.Opcode.OpcodeResult.Output
 import com.rubengees.day5.intcode.Opcode.OpcodeResult.ProgramModification
 import com.rubengees.day5.mergeDigits
@@ -15,13 +16,17 @@ sealed class Opcode<out O : Opcode.OpcodeResult>(val argumentCount: Int) {
                 2 -> Multiply
                 3 -> ReadInput
                 4 -> WriteOutput
+                5 -> JumpIfTrue
+                6 -> JumpIfFalse
+                7 -> LessThan
+                8 -> Equals
                 99 -> Halt
                 else -> error("Unknown opcode: $code")
             }
         }
     }
 
-    abstract fun execute(program: Program, args: List<Argument>): O
+    abstract fun execute(program: Program, args: List<Argument>): O?
 
     object Add : Opcode<ProgramModification>(3) {
 
@@ -59,6 +64,58 @@ sealed class Opcode<out O : Opcode.OpcodeResult>(val argumentCount: Int) {
             val (inputPosition) = args
 
             return Output(inputPosition.resolve(program))
+        }
+    }
+
+    object JumpIfTrue : Opcode<InstructionPointerModification>(2) {
+
+        override fun execute(program: Program, args: List<Argument>): InstructionPointerModification? {
+            val (input, output) = args
+
+            return when (input.resolve(program)) {
+                0 -> null
+                else -> InstructionPointerModification(output.resolve(program))
+            }
+        }
+    }
+
+    object JumpIfFalse : Opcode<InstructionPointerModification>(2) {
+
+        override fun execute(program: Program, args: List<Argument>): InstructionPointerModification? {
+            val (input, output) = args
+
+            return when (input.resolve(program)) {
+                0 -> InstructionPointerModification(output.resolve(program))
+                else -> null
+            }
+        }
+    }
+
+    object LessThan : Opcode<ProgramModification>(3) {
+
+        override fun execute(program: Program, args: List<Argument>): ProgramModification {
+            val (input1, input2, output) = args
+
+            val newProgram = when (input1.resolve(program) < input2.resolve(program)) {
+                true -> program.update(output.value, 1)
+                false -> program.update(output.value, 0)
+            }
+
+            return ProgramModification(newProgram)
+        }
+    }
+
+    object Equals : Opcode<ProgramModification>(3) {
+
+        override fun execute(program: Program, args: List<Argument>): ProgramModification {
+            val (input1, input2, output) = args
+
+            val newProgram = when (input1.resolve(program) == input2.resolve(program)) {
+                true -> program.update(output.value, 1)
+                false -> program.update(output.value, 0)
+            }
+
+            return ProgramModification(newProgram)
         }
     }
 

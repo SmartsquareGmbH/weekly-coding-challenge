@@ -31,6 +31,9 @@ object IntCodeExecutor {
                 is HaltProgram -> {
                     return ProgramExecutionResult(program, outputs)
                 }
+                else -> {
+                    instructionPointer += opcode.argumentCount + 1
+                }
             }
         }
 
