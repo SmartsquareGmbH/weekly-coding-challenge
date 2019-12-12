@@ -19,7 +19,7 @@ dependencies {
 }
 
 application {
-    mainClassName = 'com.rubengees.day7.App'
+    mainClassName = 'com.rubengees.day8.App'
 }
 
 test {
