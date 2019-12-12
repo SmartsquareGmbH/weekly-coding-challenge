@@ -1,28 +1,35 @@
 package com.rubengees.day9.intcode
 
-class Program private constructor(private val memory: List<Int>, private val inputs: List<Int> = emptyList()) {
+class Program private constructor(
+    private val memory: Map<Long, Long>,
+    val relativeBase: Long = 0,
+    private val inputs: List<Long> = emptyList()
+) {
 
     companion object {
         fun parse(rawProgram: String): Program {
             return rawProgram.split(",")
-                .map { it.trim().toInt() }
+                .map { it.trim().toLong() }
+                .withIndex()
+                .associate { (index, value) -> index.toLong() to value }
                 .let { Program(it) }
         }
     }
 
-    val length = memory.size
+    val length = memory.keys.max()?.plus(1) ?: 0L
     val input = inputs.firstOrNull()
 
-    operator fun get(index: Int) = memory[index]
+    operator fun get(index: Long) = memory.getOrDefault(index, 0)
 
-    fun withInput(value: Int) = Program(memory, inputs + value)
-    fun withInputs(vararg values: Int) = Program(memory, inputs + values.toList())
+    fun withInput(value: Long) = Program(memory, relativeBase, inputs + value)
+    fun withInputs(vararg values: Long) = Program(memory, relativeBase, inputs + values.toList())
 
-    fun update(index: Int, value: Int) = memory.toMutableList()
+    fun update(index: Long, value: Long) = memory.toMutableMap()
         .apply { set(index, value) }
-        .let { Program(it, inputs) }
+        .let { Program(it, relativeBase, inputs) }
 
-    fun shiftInputs() = Program(memory, inputs.drop(1))
+    fun adjustRelativeBase(adjustment: Long) = Program(memory, relativeBase + adjustment, inputs)
+    fun shiftInputs() = Program(memory, relativeBase, inputs.drop(1))
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -39,5 +46,5 @@ class Program private constructor(private val memory: List<Int>, private val inp
         return memory.hashCode()
     }
 
-    override fun toString() = "$memory"
+    override fun toString() = "${memory}"
 }

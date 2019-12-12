@@ -43,19 +43,19 @@ class IntCodeExecutorTest {
 
     @Test
     fun `running programs with input and output should work`() {
-        val program = Program.parse("3,0,4,0,99").withInput(999)
+        val program = Program.parse("3,0,4,0,99").withInput(999L)
         val result = IntCodeExecutor.run(program)
 
         result.program shouldEqual Program.parse("999,0,4,0,99")
-        result.outputs shouldEqual listOf(999)
+        result.outputs shouldEqual listOf(999L)
     }
 
     @Test
     fun `running a program with multiple inputs should work`() {
-        val program = Program.parse("3,15,3,16,1002,16,10,16,1,16,15,15,4,15,99,0,0").withInputs(1, 2)
+        val program = Program.parse("3,15,3,16,1002,16,10,16,1,16,15,15,4,15,99,0,0").withInputs(1L, 2L)
         val result = IntCodeExecutor.run(program)
 
-        result.outputs shouldEqual listOf(21)
+        result.outputs shouldEqual listOf(21L)
     }
 
     @Test
@@ -64,7 +64,7 @@ class IntCodeExecutorTest {
         val result = IntCodeExecutor.run(program)
 
         result.program shouldEqual Program.parse("4,0,4,1,4,6,99")
-        result.outputs shouldEqual listOf(4, 0, 99)
+        result.outputs shouldEqual listOf(4L, 0L, 99L)
     }
 
     @ParameterizedTest
@@ -85,7 +85,7 @@ class IntCodeExecutorTest {
         ],
         delimiter = ';'
     )
-    fun `running conditional programs should work`(inputProgram: String, input: Int, expectedOutput: Int) {
+    fun `running conditional programs should work`(inputProgram: String, input: Long, expectedOutput: Long) {
         val program = Program.parse(inputProgram).withInput(input)
         val result = IntCodeExecutor.run(program)
 
@@ -102,7 +102,7 @@ class IntCodeExecutorTest {
         ],
         delimiter = ';'
     )
-    fun `running jumping programs should work`(inputProgram: String, input: Int, expectedOutput: Int) {
+    fun `running jumping programs should work`(inputProgram: String, input: Long, expectedOutput: Long) {
         val program = Program.parse(inputProgram).withInput(input)
         val result = IntCodeExecutor.run(program)
 
@@ -111,7 +111,7 @@ class IntCodeExecutorTest {
 
     @ParameterizedTest
     @CsvSource(value = ["7,999", "8,1000", "9,1001"])
-    fun `running a complex program should work`(input: Int, expectedOutput: Int) {
+    fun `running a complex program should work`(input: Long, expectedOutput: Long) {
         val rawProgram = """
             3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,
             1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,
@@ -122,5 +122,31 @@ class IntCodeExecutorTest {
         val result = IntCodeExecutor.run(program)
 
         result.outputs shouldEqual listOf(expectedOutput)
+    }
+
+    @Test
+    fun `should be able to handle programs using relative arguments`() {
+        val rawProgram = "109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99"
+
+        val program = Program.parse(rawProgram)
+        val result = IntCodeExecutor.run(program)
+
+        result.outputs shouldEqual rawProgram.split(",").map { it.toLong() }
+    }
+
+    @Test
+    fun `should be able to handle programs modifying memory outside of the initialy assigned memory`() {
+        val program = Program.parse("1102,34915192,34915192,7,4,7,99,0")
+        val result = IntCodeExecutor.run(program)
+
+        result.outputs shouldEqual listOf(1219070632396864)
+    }
+
+    @Test
+    fun `should be able to run programs with large numbers`() {
+        val program = Program.parse("104,1125899906842624,99")
+        val result = IntCodeExecutor.run(program)
+
+        result.outputs shouldEqual listOf(1125899906842624L)
     }
 }

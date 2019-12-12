@@ -8,8 +8,8 @@ import com.rubengees.day9.intcode.Opcode.OpcodeResult.ProgramModification
 object IntCodeExecutor {
 
     fun run(input: Program): ProgramExecutionResult {
-        var outputs = emptyList<Int>()
-        var instructionPointer = 0
+        var outputs = emptyList<Long>()
+        var instructionPointer = 0L
         var program = input
 
         while (instructionPointer < program.length) {
@@ -29,7 +29,7 @@ object IntCodeExecutor {
                     instructionPointer += opcode.argumentCount + 1
                 }
                 is HaltProgram -> {
-                    return ProgramExecutionResult(program, instructionPointer + 1, outputs, true)
+                    return ProgramExecutionResult(program, instructionPointer + 1, outputs)
                 }
                 else -> {
                     instructionPointer += opcode.argumentCount + 1
@@ -42,8 +42,7 @@ object IntCodeExecutor {
 
     data class ProgramExecutionResult(
         val program: Program,
-        val instructionPointer: Int = 0,
-        val outputs: List<Int> = emptyList(),
-        val isHalted: Boolean = false
+        val instructionPointer: Long = 0,
+        val outputs: List<Long> = emptyList()
     )
 }

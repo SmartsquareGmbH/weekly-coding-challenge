@@ -7,31 +7,31 @@ class UtilsTest {
 
     @Test
     fun `generating the digits of 12345 should return a correct sequence`() {
-        12345.digits().toList() shouldEqual listOf(5, 4, 3, 2, 1)
+        12345L.digits().toList() shouldEqual listOf(5L, 4L, 3L, 2L, 1L)
     }
 
     @Test
     fun `generating the digits of 1 should return a correct sequence`() {
-        1.digits().toList() shouldEqual listOf(1)
+        1L.digits().toList() shouldEqual listOf(1L)
     }
 
     @Test
     fun `merging the digits of 5, 4, 3, 2, 1 should return the correct result`() {
-        listOf(5, 4, 3, 2, 1).mergeDigits() shouldEqual 12345
+        listOf(5L, 4L, 3L, 2L, 1L).mergeDigits() shouldEqual 12345L
     }
 
     @Test
     fun `merging the digits of 1 should return the correct result`() {
-        listOf(1).mergeDigits() shouldEqual 1
+        listOf(1L).mergeDigits() shouldEqual 1L
     }
 
     @Test
     fun `merging the digits of an empty list should return 0`() {
-        emptyList<Int>().mergeDigits() shouldEqual 0
+        emptyList<Long>().mergeDigits() shouldEqual 0L
     }
 
     @Test
     fun `merging the digits of 5, 4, 3, 2, 1 as a sequence should return the correct result`() {
-        sequenceOf(5, 4, 3, 2, 1).mergeDigits() shouldEqual 12345
+        sequenceOf(5L, 4L, 3L, 2L, 1L).mergeDigits() shouldEqual 12345L
     }
 }

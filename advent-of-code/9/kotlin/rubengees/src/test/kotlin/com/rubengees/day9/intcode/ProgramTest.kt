@@ -7,21 +7,28 @@ class ProgramTest {
 
     @Test
     fun `parse should construct a correct program`() {
-        val input = "1,9,10,3,2,3,11,0,99,30,40,50"
-        val result = Program.parse(input)
+        val result = Program.parse("1,9,10,3,2,3,11,0,99,30,40,50")
 
-        result[0] shouldEqual 1
-        result[2] shouldEqual 10
-        result[11] shouldEqual 50
+        result[0L] shouldEqual 1L
+        result[2L] shouldEqual 10L
+        result[11L] shouldEqual 50L
     }
 
     @Test
     fun `update should work`() {
-        val input = "1,9,10,3,2,3,11,0,99,30,40,50"
-        val program = Program.parse(input)
-        val result = program.update(4, 100)
+        val program = Program.parse("1,9,10,3,2,3,11,0,99,30,40,50")
+        val result = program.update(4L, 100L)
 
-        program[4] shouldEqual 2
-        result[4] shouldEqual 100
+        program[4L] shouldEqual 2L
+        result[4L] shouldEqual 100L
+    }
+
+    @Test
+    fun `should be able to handle indices outside of initial memory`() {
+        val program = Program.parse("1,9,10,3,2,3,11,0,99,30,40,50")
+        val result = (program.update(1000000000L, 123L))
+
+        result[1000000000L] shouldEqual 123L
+        result.length shouldEqual 1000000001L
     }
 }

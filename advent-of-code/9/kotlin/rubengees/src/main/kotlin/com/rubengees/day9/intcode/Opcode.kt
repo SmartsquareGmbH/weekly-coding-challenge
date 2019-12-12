@@ -10,17 +10,18 @@ import com.rubengees.day9.mergeDigits
 sealed class Opcode<out O : Opcode.OpcodeResult>(val argumentCount: Int) {
 
     companion object {
-        fun parse(input: Int): Opcode<OpcodeResult> {
+        fun parse(input: Long): Opcode<OpcodeResult> {
             return when (val code = input.digits().take(2).mergeDigits()) {
-                1 -> Add
-                2 -> Multiply
-                3 -> ReadInput
-                4 -> WriteOutput
-                5 -> JumpIfTrue
-                6 -> JumpIfFalse
-                7 -> LessThan
-                8 -> Equals
-                99 -> Halt
+                1L -> Add
+                2L -> Multiply
+                3L -> ReadInput
+                4L -> WriteOutput
+                5L -> JumpIfTrue
+                6L -> JumpIfFalse
+                7L -> LessThan
+                8L -> Equals
+                9L -> AdjustRelativeBase
+                99L -> Halt
                 else -> error("Unknown opcode: $code")
             }
         }
@@ -32,7 +33,11 @@ sealed class Opcode<out O : Opcode.OpcodeResult>(val argumentCount: Int) {
 
         override fun execute(program: Program, args: List<Argument>): ProgramModification {
             val (input1, input2, output) = args
-            val newProgram = program.update(output.value, input1.resolve(program) + input2.resolve(program))
+
+            val newProgram = program.update(
+                output.resolveOutput(program),
+                input1.resolve(program) + input2.resolve(program)
+            )
 
             return ProgramModification(newProgram)
         }
@@ -42,7 +47,11 @@ sealed class Opcode<out O : Opcode.OpcodeResult>(val argumentCount: Int) {
 
         override fun execute(program: Program, args: List<Argument>): ProgramModification {
             val (input1, input2, output) = args
-            val newProgram = program.update(output.value, input1.resolve(program) * input2.resolve(program))
+
+            val newProgram = program.update(
+                output.resolveOutput(program),
+                input1.resolve(program) * input2.resolve(program)
+            )
 
             return ProgramModification(newProgram)
         }
@@ -52,7 +61,7 @@ sealed class Opcode<out O : Opcode.OpcodeResult>(val argumentCount: Int) {
 
         override fun execute(program: Program, args: List<Argument>): ProgramModification {
             val (output) = args
-            val newProgram = program.update(output.value, requireNotNull(program.input)).shiftInputs()
+            val newProgram = program.update(output.resolveOutput(program), requireNotNull(program.input)).shiftInputs()
 
             return ProgramModification(newProgram)
         }
@@ -73,7 +82,7 @@ sealed class Opcode<out O : Opcode.OpcodeResult>(val argumentCount: Int) {
             val (input, output) = args
 
             return when (input.resolve(program)) {
-                0 -> null
+                0L -> null
                 else -> InstructionPointerModification(output.resolve(program))
             }
         }
@@ -85,7 +94,7 @@ sealed class Opcode<out O : Opcode.OpcodeResult>(val argumentCount: Int) {
             val (input, output) = args
 
             return when (input.resolve(program)) {
-                0 -> InstructionPointerModification(output.resolve(program))
+                0L -> InstructionPointerModification(output.resolve(program))
                 else -> null
             }
         }
@@ -97,8 +106,8 @@ sealed class Opcode<out O : Opcode.OpcodeResult>(val argumentCount: Int) {
             val (input1, input2, output) = args
 
             val newProgram = when (input1.resolve(program) < input2.resolve(program)) {
-                true -> program.update(output.value, 1)
-                false -> program.update(output.value, 0)
+                true -> program.update(output.resolveOutput(program), 1)
+                false -> program.update(output.resolveOutput(program), 0)
             }
 
             return ProgramModification(newProgram)
@@ -111,11 +120,20 @@ sealed class Opcode<out O : Opcode.OpcodeResult>(val argumentCount: Int) {
             val (input1, input2, output) = args
 
             val newProgram = when (input1.resolve(program) == input2.resolve(program)) {
-                true -> program.update(output.value, 1)
-                false -> program.update(output.value, 0)
+                true -> program.update(output.resolveOutput(program), 1)
+                false -> program.update(output.resolveOutput(program), 0)
             }
 
             return ProgramModification(newProgram)
+        }
+    }
+
+    object AdjustRelativeBase : Opcode<ProgramModification>(1) {
+
+        override fun execute(program: Program, args: List<Argument>): ProgramModification {
+            val (input) = args
+
+            return ProgramModification(program.adjustRelativeBase(input.resolve(program)))
         }
     }
 
@@ -125,8 +143,8 @@ sealed class Opcode<out O : Opcode.OpcodeResult>(val argumentCount: Int) {
 
     sealed class OpcodeResult {
         data class ProgramModification(val newProgram: Program) : OpcodeResult()
-        data class InstructionPointerModification(val newInstructionPointer: Int) : OpcodeResult()
-        data class Output(val value: Int) : OpcodeResult()
+        data class InstructionPointerModification(val newInstructionPointer: Long) : OpcodeResult()
+        data class Output(val value: Long) : OpcodeResult()
         object HaltProgram : OpcodeResult()
     }
 }
